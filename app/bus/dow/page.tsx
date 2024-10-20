@@ -4,6 +4,7 @@ import { getCompletedFiles } from '@/app/lib/dataSources/filesRepository'
 import { MisoCompletedFile,CommitResult } from '@/app/lib/dataSources/FilesDataSource'
 import { useState, useEffect } from 'react'
 import {FaFileExcel, FaDownload, FaTrash} from 'react-icons/fa'
+import { useRouter } from 'next/navigation'
 import axios from 'axios'
 export default function Page() {
     const [files, setFiles] = useState<Array<MisoCompletedFile>>()
@@ -44,12 +45,13 @@ interface ExcelProps{
     data : MisoCompletedFile
   }
   const ExcelFileComponent : React.FC<ExcelProps> = ({data})=>{
+    const router = useRouter()
     return(
       <div className=' max-w-28 hover:z-50 cursor-pointer flex flex-col items-center justify-center max-h-[500px] m-4 '>
         <FaFileExcel size={80} color='#217346'/>
         <span className='max-w-28 max-h-[100px] truncate hover:overflow-visible hover:whitespace-normal '>{data.name}</span>
         <div className='w-full flex flex-row justify-between items-center'>
-            <div onClick={async()=>await download(data.path)}>
+            <div onClick={async()=>router.push(data.path)}>
                 <FaDownload color='blue'/>
             </div>
             <div>
@@ -61,6 +63,7 @@ interface ExcelProps{
     )
   }
 
-  async function download(path:string) {
-    await axios.get(path)    
-  }
+//   async function download(path:string) {
+
+//     await axios.get(path)    
+//   }

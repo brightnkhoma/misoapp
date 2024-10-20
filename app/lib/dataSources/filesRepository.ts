@@ -19,3 +19,8 @@ export async function getCompletedFiles(onSuccess : (data : Array<MisoCompletedF
     const dataSource = new MisoFileDataSource()
     await dataSource.fetchCompleteData(onSuccess,onFailure)
 }
+export async function processData(name : string, path : string,onSuccess : (data : string) => void, onFailure : (data : CommitResult)=> void){
+    const dataSource = new MisoFileDataSource()
+    await dataSource.process(name,path,onSuccess,onFailure)
+}
+

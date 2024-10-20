@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {db} from '../data/firebase'
 import { getDoc,getDocs,setDoc,doc, collection } from 'firebase/firestore';
 import { getStorage,ref,uploadBytesResumable,getDownloadURL } from 'firebase/storage';
@@ -38,11 +39,37 @@ interface MisoFiles{
     //uploadref : (path : string)=> Promise<CommitResult>;
     //delete : (path : string)=> Promise<CommitResult>;
     //download : (path : string)=> Promise<CommitResult>; 
+    process : (name : string, path : string, onSuccess : (path : string)=> void, onFailure : (error : CommitResult)=> void)=> void
     fetchData : (isRef : boolean,onSuccess : (data : Array<MisoFile>) => void, onFailure : (data : CommitResult)=> void)=>void;
     fetchCompleteData : (onSuccess : (data : Array<MisoCompletedFile>) => void, onFailure : (data : CommitResult)=> void)=>void;
 }
 
 export class MisoFileDataSource implements MisoFiles{
+    async process(name: string, path: string, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
+      try {
+
+        const res = await axios.post("http://192.168.43.56:8000/addnumber/",{name : name, path : path},{
+          headers: {
+            'Content-Type': 'application/json',
+        }
+        })
+        
+        const data = {status : res.data.status, message : res.data.message}
+        console.log(data);
+        
+        alert(JSON.stringify(data))
+        if(data.status){
+          alert(JSON.stringify(data))
+          onSuccess(path)
+        }else{
+          onFailure({status : false, message : "failed to process"}) 
+        }
+        
+      } catch (error) {
+        onFailure({status : false, message : "something went wrong"})        
+        
+      }
+    }
     async fetchCompleteData (onSuccess: (data: Array<MisoCompletedFile>) => void, onFailure: (data: CommitResult) => void){
       try {
         const dbCollection = collection(db,"miso/data/processed")
