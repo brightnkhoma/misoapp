@@ -1,6 +1,9 @@
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Header } from "./components/compononts";
+import {FaPhone} from 'react-icons/fa'
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -28,7 +31,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <div className="w-screen h-screen flex flex-row">
+        <Header/>
         {children}
+        </div>
       </body>
     </html>
   );
