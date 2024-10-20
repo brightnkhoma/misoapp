@@ -1,13 +1,12 @@
-import app,{db} from '../data/firebase'
-import { getDoc,getDocs,WriteBatch,setDoc,doc, collection } from 'firebase/firestore';
-import { getStorage,ref,uploadBytes,uploadBytesResumable,getDownloadURL } from 'firebase/storage';
-import path from 'path';
+import {db} from '../data/firebase'
+import { getDoc,getDocs,setDoc,doc, collection } from 'firebase/firestore';
+import { getStorage,ref,uploadBytesResumable,getDownloadURL } from 'firebase/storage';
 
 
-const log = (data :any)=>{
-    console.log(data);
+// const log = (data :any)=>{
+//     console.log(data);
     
-}
+// }
 export interface CommitResult{
     status : boolean,
     message : string
@@ -36,9 +35,9 @@ export interface MisoCompletedFile{
 
 interface MisoFiles{
     upload : (path : FileList, onProgressChange : (progress : Progress)=> void, isRef : boolean,onFinish : (data : CommitResult)=>void)=> Promise<CommitResult>;
-    uploadref : (path : string)=> Promise<CommitResult>;
-    delete : (path : string)=> Promise<CommitResult>;
-    download : (path : string)=> Promise<CommitResult>; 
+    //uploadref : (path : string)=> Promise<CommitResult>;
+    //delete : (path : string)=> Promise<CommitResult>;
+    //download : (path : string)=> Promise<CommitResult>; 
     fetchData : (isRef : boolean,onSuccess : (data : Array<MisoFile>) => void, onFailure : (data : CommitResult)=> void)=>void;
     fetchCompleteData : (onSuccess : (data : Array<MisoCompletedFile>) => void, onFailure : (data : CommitResult)=> void)=>void;
 }
@@ -51,7 +50,7 @@ export class MisoFileDataSource implements MisoFiles{
         const files = data.docs.map(value=>value.data()) as Array<MisoCompletedFile>
         onSuccess(files)        
       } catch (error) {
-      log(error)
+        console.log(error)
       onFailure({status : false, message : "something went wrong"})        
       }
     }
@@ -102,7 +101,7 @@ export class MisoFileDataSource implements MisoFiles{
                       }
                     }, 
                     (error) => {
-                        log(error)
+                      console.log(error)
                       onProgressChange({ failed: true, finished: false, name: data.name, progress: "failed" });
                     }, 
                     () => {
@@ -115,13 +114,13 @@ export class MisoFileDataSource implements MisoFiles{
                     }
                   );
                 } else {
-                    log("exists")
-                    log(x)
+                  console.log("exists")
+                  console.log(x)
                     const message = x == null ? "error" : "exists"
                     onProgressChange({ failed: true, finished: false, name: data.name, progress: message });
                 }
               } catch (error) {
-                log(error);
+                console.log(error);
                 onProgressChange({ failed: true, finished: false, name: data.name, progress: "error" });
               }
             })
@@ -131,34 +130,30 @@ export class MisoFileDataSource implements MisoFiles{
           return { status: true, message: "files uploaded" };
       
         } catch (error) {
-          log(error);
+          console.log(error);
           onFinish({ status: false, message: "something went wrong" });
           return { status: false, message: "something went wrong" };
         }
       }
       
-    async uploadref(path: string) : Promise<CommitResult>{
-        return {} as CommitResult
-    }
-    async delete (path: string) : Promise<CommitResult>{
-        return {} as CommitResult
-    }
-    async download (path: string) : Promise<CommitResult>{
-        return {} as CommitResult
-    }
+    // async uploadref(path: string) : Promise<CommitResult>{
+    //     return {} as CommitResult
+    // }
+    // async delete (path: string) : Promise<CommitResult>{
+    //     return {} as CommitResult
+    // }
+    // async download (path: string) : Promise<CommitResult>{
+    //     return {} as CommitResult
+    // }
 
     async checkFileExistence(name : string,isRef : boolean = false) : Promise<boolean | null>{
         try {
             const path = isRef? "miso/ref/data" : "miso/data/data"
-            log(11)
             const dbDoc = doc(db,path,name)
-            log(12)
             const file = await getDoc(dbDoc)
-            log(13)
             return file.exists()            
         } catch (error) {
-            log(14)
-            log(error)
+          console.log(error)
             return null            
         }
     }
@@ -170,7 +165,7 @@ export class MisoFileDataSource implements MisoFiles{
             await setDoc(dbDoc,file)
             return {status : true, message : "file registered"}            
         } catch (error) {
-            log(error)
+          console.log(error)
             return {status : false, message : "something went wrong"}         
                 }
     }

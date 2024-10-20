@@ -1,22 +1,17 @@
 'use client'
-import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import { IconType } from "react-icons";
-import {FaUpload,FaHandPointer,FaFileExcel,FaTrash} from 'react-icons/fa'
+import {FaUpload,FaHandPointer,FaFileExcel} from 'react-icons/fa'
 import { useDropzone } from "react-dropzone";
-import { json } from "stream/consumers";
 import { uploadExcelFileData } from "./lib/dataSources/filesRepository";
-import { CommitResult, Progress } from "./lib/dataSources/FilesDataSource";
-import { finished } from "stream";
+import { Progress } from "./lib/dataSources/FilesDataSource";
 interface UploadButtonProps{
   action : string,
   icon : IconType,
   onPress : ()=>void
 }
 
-const log = (data : any)=>{
-  console.log(data)
-}
+
 
 const UploadButton : React.FC<UploadButtonProps> = ({action,icon : Icon,onPress})=>{
   return(
@@ -87,22 +82,23 @@ const FileUpload = ()=>{
         }
       },
       data => {
+        console.log(JSON.stringify(data));        
          setUploading(false);
       }
     );
 
   }
   
-  function check() : boolean{
-    return files?.length != null && files.length > 0
-  }
-  function getProgress(name : string) : Progress{
-    if(check()){
-      const fileName = progress?.find(value=> value.name == name)
-      if(fileName){ return fileName} else return {} as Progress
-    }else
-    return {} as Progress
-  }
+  // function check() : boolean{
+  //   return files?.length != null && files.length > 0
+  // }
+  // function getProgress(name : string) : Progress{
+  //   if(check()){
+  //     const fileName = progress?.find(value=> value.name == name)
+  //     if(fileName){ return fileName} else return {} as Progress
+  //   }else
+  //   return {} as Progress
+  // }
 
   const {getRootProps, getInputProps} = useDropzone({onDrop})
 
@@ -142,7 +138,7 @@ const FileUpload = ()=>{
   )
 }
 
-const ProgressIndicator : React.FC<Progress> = ({failed,finished,name,progress})=>{
+const ProgressIndicator : React.FC<Progress> = ({failed,finished,progress})=>{
   return(
     <div className="w-max">
       <span className={`${finished? "text-green-700" : failed ? "text-red-700" : "text-blue-700"} font-semibold`}>{progress}</span>

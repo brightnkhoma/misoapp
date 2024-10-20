@@ -5,7 +5,7 @@ import {FaFileExcel} from 'react-icons/fa'
 import { getFiles } from '../lib/dataSources/filesRepository'
 import { CommitResult, MisoFile } from '../lib/dataSources/FilesDataSource'
 
-export default function page() {
+export default function Page() {
   const [files, setFiles] = useState<Array<MisoFile>>()
   const [error, setError] = useState<CommitResult>()
   async function get() {
@@ -15,7 +15,7 @@ export default function page() {
     if(!files){
       get()
   }
-  },[])
+  })
   return (
     <div className='flex-1 flex flex-col p-8'>
       <div className='w-full h-full flex flex-col gap-8 flex-wrap overflow-auto'>
@@ -26,9 +26,11 @@ export default function page() {
             </div>
           ))
         }
+      <span className='text-center text-red-600'>{error && error.message}</span>
         
 
       </div>
+      
       
     </div>
   )

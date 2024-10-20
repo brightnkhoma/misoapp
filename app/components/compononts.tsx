@@ -1,6 +1,5 @@
 'use client'
 
-import { Icon } from 'next/dist/lib/metadata/types/metadata-types'
 import React from 'react'
 import { IconType } from 'react-icons'
 import {FaPhone, FaAd,FaDownload} from 'react-icons/fa'
@@ -12,10 +11,10 @@ interface RouterProps{
     onPress : ()=>void
 }
 
-interface HeaderProps{
-    headerData : Array<RouterProps>
+// interface HeaderProps{
+//     headerData : Array<RouterProps>
 
-}
+// }
 
 
 export const RouteComponent : React.FC<RouterProps> = ({icon : Icon,name,onPress})=>{

@@ -5,7 +5,7 @@ import { MisoCompletedFile,CommitResult } from '@/app/lib/dataSources/FilesDataS
 import { useState, useEffect } from 'react'
 import {FaFileExcel, FaDownload, FaTrash} from 'react-icons/fa'
 import axios from 'axios'
-export default function page() {
+export default function Page() {
     const [files, setFiles] = useState<Array<MisoCompletedFile>>()
     const [error, setError] = useState<CommitResult>()
     async function get() {
@@ -17,7 +17,7 @@ export default function page() {
             get()
         }
         
-    },[])
+    })
   return (
     <div className='flex-1 flex flex-col p-8'>
         <div className='w-full h-full flex flex-row gap-6'>
@@ -29,6 +29,12 @@ export default function page() {
                 </div>
             ))
         }
+        <div className='w-full'>
+            {
+                error && <span className='text-center'>{error.message}</span>
+            }
+
+        </div>
         </div>
     </div>
   )

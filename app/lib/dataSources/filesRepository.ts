@@ -1,4 +1,4 @@
-import { MisoFileDataSource,CommitResult,FileRef,MisoFile,Progress,MisoCompletedFile } from "./FilesDataSource";
+import { MisoFileDataSource,CommitResult,MisoFile,Progress,MisoCompletedFile } from "./FilesDataSource";
 
 
 export async function uploadExcelFileData(path : FileList, onProgressChange : (progress : Progress)=> void,onFinish : (data : CommitResult)=>void) : Promise<CommitResult>{
