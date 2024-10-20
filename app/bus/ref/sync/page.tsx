@@ -2,16 +2,15 @@
 
 import React, { useEffect, useState } from 'react'
 import {FaFileExcel,FaUpload,FaTrash} from 'react-icons/fa'
-import { getFiles } from '../lib/dataSources/filesRepository'
-import { CommitResult, MisoFile } from '../lib/dataSources/FilesDataSource'
-import { processData } from '../lib/dataSources/filesRepository'
-import { deleteDataRefs } from '../lib/dataSources/filesRepository'
-
+import { CommitResult, MisoFile } from '@/app/lib/dataSources/FilesDataSource'
+import { processDataRef } from '@/app/lib/dataSources/filesRepository'
+import { getFilesRefs } from '@/app/lib/dataSources/filesRepository'
+import { deleteRef } from '@/app/lib/dataSources/filesRepository'
 export default function Page() {
   const [files, setFiles] = useState<Array<MisoFile>>()
   const [error, setError] = useState<CommitResult>()
   async function get() {
-    await getFiles(data=>setFiles(data),error =>setError(error))        
+    await getFilesRefs(data=>setFiles(data),error =>setError(error))        
   }
   useEffect(()=>{
     if(!files){
@@ -55,7 +54,7 @@ const ExcelFileComponent : React.FC<ExcelProps> = ({data})=>{
       <button disabled={loading} className={`${loading ? "animate-spin" : "animate-none" } bg-transparent ${error && error?.status == false ? "bg-red-500" :  "bg-green-500"} mb-2`} onClick={async()=>{
         setLoading(true)
         setPath("")
-        await processData(data.name,data.path,data=>{
+        await processDataRef(data.name,data.path,data=>{
         setPath(data)
         setLoading(false)
         setError({} as CommitResult)
@@ -72,7 +71,7 @@ const ExcelFileComponent : React.FC<ExcelProps> = ({data})=>{
 
       <button onClick={async()=>{
         setDeleting(true)
-        await deleteDataRefs(data.name,name=>{
+        await deleteRef(data.name,name=>{
           console.log(name);
           setDeleted(true)
           setDeleting(false)

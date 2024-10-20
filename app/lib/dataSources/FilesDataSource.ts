@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {db} from '../data/firebase'
-import { getDoc,getDocs,setDoc,doc, collection } from 'firebase/firestore';
-import { getStorage,ref,uploadBytesResumable,getDownloadURL } from 'firebase/storage';
+import { getDoc,getDocs,setDoc,doc, collection, deleteDoc } from 'firebase/firestore';
+import { getStorage,ref,uploadBytesResumable,getDownloadURL,deleteObject } from 'firebase/storage';
 
 
 // const log = (data :any)=>{
@@ -37,7 +37,7 @@ export interface MisoCompletedFile{
 interface MisoFiles{
     upload : (path : FileList, onProgressChange : (progress : Progress)=> void, isRef : boolean,onFinish : (data : CommitResult)=>void)=> Promise<CommitResult>;
     //uploadref : (path : string)=> Promise<CommitResult>;
-    //delete : (path : string)=> Promise<CommitResult>;
+    delete : (name : string, isDownload : boolean,onSuccess : (name : string)=> void, onFailure : (data : CommitResult)=>void)=> Promise<CommitResult>;
     //download : (path : string)=> Promise<CommitResult>; 
     process : (name : string, path : string, onSuccess : (path : string)=> void, onFailure : (error : CommitResult)=> void)=> void
     fetchData : (isRef : boolean,onSuccess : (data : Array<MisoFile>) => void, onFailure : (data : CommitResult)=> void)=>void;
@@ -48,7 +48,7 @@ export class MisoFileDataSource implements MisoFiles{
     async process(name: string, path: string, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
       try {
 
-        const res = await axios.post("http://192.168.43.56:8000/addnumber/",{name : name, path : path},{
+        const res = await axios.post("https://misoapi-iota.vercel.app/addnumber/",{name : name, path : path},{
           headers: {
             'Content-Type': 'application/json',
         }
@@ -57,9 +57,30 @@ export class MisoFileDataSource implements MisoFiles{
         const data = {status : res.data.status, message : res.data.message}
         console.log(data);
         
-        alert(JSON.stringify(data))
         if(data.status){
-          alert(JSON.stringify(data))
+          onSuccess(path)
+        }else{
+          onFailure({status : false, message : "failed to process"}) 
+        }
+        
+      } catch (error) {
+        onFailure({status : false, message : "something went wrong"})        
+        
+      }
+    }
+    async processRef(name: string, path: string, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
+      try {
+
+        const res = await axios.post("https://misoapi-iota.vercel.app/feeddata/",{name : name, path : path},{
+          headers: {
+            'Content-Type': 'application/json',
+        }
+        })
+        
+        const data = {status : res.data.status, message : res.data.message}
+        console.log(data);
+        
+        if(data.status){
           onSuccess(path)
         }else{
           onFailure({status : false, message : "failed to process"}) 
@@ -166,9 +187,50 @@ export class MisoFileDataSource implements MisoFiles{
     // async uploadref(path: string) : Promise<CommitResult>{
     //     return {} as CommitResult
     // }
-    // async delete (path: string) : Promise<CommitResult>{
-    //     return {} as CommitResult
-    // }
+    async delete (name: string, isDownload : boolean,onSuccess : (name : string)=> void, onFailure : (data : CommitResult)=>void) : Promise<CommitResult>{
+      try {
+        const storage = getStorage();
+        const root = isDownload ? "miso/data/processed" : "miso/data";
+        const docRef = isDownload ? "miso/data/processed" : "miso/data/data"
+        const dbdoc = doc(db,docRef,name)
+        const reference = ref(storage,`${root}/${name}`)
+        await deleteObject(reference).catch(e=>{
+          console.log(e);
+          onFailure({status : false, message : "something went wrong"})                 
+
+        })
+        await deleteDoc(dbdoc)
+        onSuccess(name)
+        
+      } catch (error) {
+        onFailure({status : false, message : "something went wrong"})       
+
+        
+      }
+        return {} as CommitResult
+    }
+    async deleteRef (name: string,onSuccess : (name : string)=> void, onFailure : (data : CommitResult)=>void) : Promise<CommitResult>{
+      try {
+        const storage = getStorage();
+        const root = "miso/data";
+        const docRef = "miso/ref/data" 
+        const dbdoc = doc(db,docRef,name)
+        const reference = ref(storage,`${root}/${name}`)
+        await deleteObject(reference).catch(e=>{
+          console.log(e);
+          onFailure({status : false, message : "something went wrong"})                 
+
+        })
+        await deleteDoc(dbdoc)
+        onSuccess(name)
+        
+      } catch (error) {
+        onFailure({status : false, message : "something went wrong"})       
+
+        
+      }
+        return {} as CommitResult
+    }
     // async download (path: string) : Promise<CommitResult>{
     //     return {} as CommitResult
     // }

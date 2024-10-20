@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { IconType } from 'react-icons'
-import {FaPhone, FaAd,FaDownload} from 'react-icons/fa'
+import {FaPhone, FaAd,FaDownload,FaSign, FaCog} from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
 
 interface RouterProps{
@@ -29,6 +29,8 @@ export const Header = ()=>{
     const router = useRouter()
     const headerData = [
         {name : "add number",onPress :()=> {router.push("/")},icon : FaAd},
+        {name : "add reference",onPress :()=> {router.push("/bus/ref")},icon : FaSign},
+        {name : "sync references",onPress :()=> {router.push("/bus/ref/sync")},icon : FaCog},
         {name : "assign numbers",onPress :()=> {router.push("/bus")},icon : FaPhone},
         {name : "download files",onPress :()=> {router.push("/bus/dow")},icon : FaDownload},
     ]

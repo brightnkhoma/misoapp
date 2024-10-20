@@ -5,7 +5,7 @@ import { MisoCompletedFile,CommitResult } from '@/app/lib/dataSources/FilesDataS
 import { useState, useEffect } from 'react'
 import {FaFileExcel, FaDownload, FaTrash} from 'react-icons/fa'
 import { useRouter } from 'next/navigation'
-import axios from 'axios'
+import { deleteData } from '@/app/lib/dataSources/filesRepository'
 export default function Page() {
     const [files, setFiles] = useState<Array<MisoCompletedFile>>()
     const [error, setError] = useState<CommitResult>()
@@ -45,18 +45,31 @@ interface ExcelProps{
     data : MisoCompletedFile
   }
   const ExcelFileComponent : React.FC<ExcelProps> = ({data})=>{
+    const [deleting, setDeleting] = useState<boolean>(false)
+    const [deleted, setDeleted] = useState<boolean>(false)
     const router = useRouter()
     return(
-      <div className=' max-w-28 hover:z-50 cursor-pointer flex flex-col items-center justify-center max-h-[500px] m-4 '>
+      <div className={`${deleted && "hidden"} max-w-28 hover:z-50 cursor-pointer flex flex-col items-center justify-center max-h-[500px] m-4 `}>
         <FaFileExcel size={80} color='#217346'/>
         <span className='max-w-28 max-h-[100px] truncate hover:overflow-visible hover:whitespace-normal '>{data.name}</span>
         <div className='w-full flex flex-row justify-between items-center'>
             <div onClick={async()=>router.push(data.path)}>
                 <FaDownload color='blue'/>
             </div>
-            <div>
+            <button onClick={async()=>{
+                setDeleting(true)
+                await deleteData(data.name,name=>{
+                    console.log(name);
+                    setDeleting(false)
+                    setDeleted(true)                    
+                },data =>{
+                    console.log(data);
+                    setDeleting(false)
+                    
+                })
+            }} className={`${deleting ? "animate-pulse" : "animate-none"}`}>
                 <FaTrash color='red'/>
-            </div>
+            </button>
         </div>
   
       </div>
