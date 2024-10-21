@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {db} from '../data/firebase'
-import { getDoc,getDocs,setDoc,doc, collection, deleteDoc, addDoc } from 'firebase/firestore';
+import { getDoc,getDocs,setDoc,doc, collection, deleteDoc } from 'firebase/firestore';
 import { getStorage,ref,uploadBytesResumable,getDownloadURL,deleteObject } from 'firebase/storage';
 
 
