@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {db} from '../data/firebase'
-import { getDoc,getDocs,setDoc,doc, collection, deleteDoc } from 'firebase/firestore';
+import { getDoc,getDocs,setDoc,doc, collection, deleteDoc, addDoc } from 'firebase/firestore';
 import { getStorage,ref,uploadBytesResumable,getDownloadURL,deleteObject } from 'firebase/storage';
 
 
@@ -59,6 +59,9 @@ export class MisoFileDataSource implements MisoFiles{
         console.log(data);
         
         if(data.status){
+          const dbDoc = doc(db,"miso/data/processed",name)
+          const myData = {name : name, path : data.message}
+          await setDoc(dbDoc,myData)
           onSuccess(path)
         }else{
           onFailure({status : false, message : "failed to process"}) 
