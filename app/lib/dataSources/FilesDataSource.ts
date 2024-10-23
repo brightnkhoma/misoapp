@@ -8,7 +8,7 @@ import { getStorage,ref,uploadBytesResumable,getDownloadURL,deleteObject } from 
 //     console.log(data);
     
 // }
-const url = "https://misoapi-98c91pmq1-bright-nkhomas-projects.vercel.app/"
+const url = "https://misoapi-psi.vercel.app/"
 export interface CommitResult{
     status : boolean,
     message : string
