@@ -43,9 +43,32 @@ interface MisoFiles{
     process : (name : string, path : string, onSuccess : (path : string)=> void, onFailure : (error : CommitResult)=> void)=> void
     fetchData : (isRef : boolean,onSuccess : (data : Array<MisoFile>) => void, onFailure : (data : CommitResult)=> void)=>void;
     fetchCompleteData : (onSuccess : (data : Array<MisoCompletedFile>) => void, onFailure : (data : CommitResult)=> void)=>void;
+    clearUsers : (code : string,onResult : (data : CommitResult) => void)=> void
 }
 
 export class MisoFileDataSource implements MisoFiles{
+    async clearUsers(code: string, onResult: (data: CommitResult) => void){
+      try {
+        if(code != "sudodelete1234") return onResult({status : false,message : "wrong code"})
+        const res = await axios.post(`${url}clear/`,{
+          headers: {
+            'Content-Type': 'application/json',
+        }
+        })
+        
+        const data = {status : res.data.status, message : res.data.message}
+        console.log(data);
+        onResult(data)
+        
+        
+      } catch (error) {
+
+        console.log(error);
+        onResult({status : false, message : "something went wrong"})
+        
+        
+      }
+    }
     async process(name: string, path: string, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
       try {
 

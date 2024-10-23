@@ -45,3 +45,7 @@ export async function deleteRef (name: string,onSuccess : (name : string)=> void
     const dataSource = new MisoFileDataSource()
     await dataSource.deleteRef(name,onSuccess,onFailure)
 }
+export async function clearDatabase (code: string, onResult: (data: CommitResult) => void) {
+    const dataSource = new MisoFileDataSource()
+    await dataSource.clearUsers(code,onResult)
+}

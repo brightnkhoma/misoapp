@@ -6,6 +6,41 @@ import { CommitResult, MisoFile } from '@/app/lib/dataSources/FilesDataSource'
 import { processDataRef } from '@/app/lib/dataSources/filesRepository'
 import { getFilesRefs } from '@/app/lib/dataSources/filesRepository'
 import { deleteRef } from '@/app/lib/dataSources/filesRepository'
+import { clearDatabase } from '@/app/lib/dataSources/filesRepository'
+
+
+const DeleteButton = ()=>{
+  const [toDelete, setToDelete] = useState<boolean>(false)
+  const [deleting, setDeleting] = useState<boolean>(false)
+  const [code, setCode] = useState<string>("")
+  const [result, setResult] = useState<CommitResult>()
+
+  useEffect(()=>{
+    if(result?.status == false){
+      setToDelete(false)
+    }
+  },[result])
+  return(
+    <div className='flex flex-row gap-4'>{
+      toDelete &&
+      <input onChange={e=>setCode(e.target.value)} placeholder='enter code to continue' className='border-2 rounded-lg border-red-700 text-red-600 p-2' type="text" />}
+      
+      <button disabled={deleting} onClick={async()=>{
+        if(!toDelete) return setToDelete(true)
+          setDeleting(true)
+        await clearDatabase(code,data=>{
+          console.log(data);
+          setResult(data)
+          setDeleting(false)
+
+          
+        })
+      }} className='border px-4  rounded-lg'>
+        drop table
+      </button>
+    </div>
+  )
+}
 export default function Page() {
   const [files, setFiles] = useState<Array<MisoFile>>()
   const [error, setError] = useState<CommitResult>()
@@ -19,6 +54,9 @@ export default function Page() {
   })
   return (
     <div className='flex-1 flex flex-col p-8'>
+            <div className="w-full flex flex-row justify-end p-8">
+        <DeleteButton/>
+      </div>
       <div className='w-full h-full flex flex-col gap-8 flex-wrap overflow-auto'>
         {
           files && files.map((value,index)=>(
