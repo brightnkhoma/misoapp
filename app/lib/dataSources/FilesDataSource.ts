@@ -72,6 +72,10 @@ export class MisoFileDataSource implements MisoFiles{
         
       }
     }
+
+    getCurrentDate() : Date{
+      return new Date()
+    }
     async processRef(name: string, path: string, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
       try {
 
@@ -119,6 +123,12 @@ export class MisoFileDataSource implements MisoFiles{
         
       }
     }
+    cutString (word : string) : string{
+      if(word.length > 30){
+
+        return word.substring(0,20)+ ".xlsx"
+      }else return word
+    }
     async upload(
         path: FileList, 
         onProgressChange: (progress: Progress) => void, 
@@ -133,15 +143,15 @@ export class MisoFileDataSource implements MisoFiles{
           await Promise.all(
             Array.from(path).map(async (data) => {
               try {
-                const x = await this.checkFileExistence(data.name, isRef);
+                const x = await this.checkFileExistence(this.cutString(data.name), isRef);
                 if (x==false) {
-                  const reference = ref(storage, `${root}/${data.name}`);
+                  const reference = ref(storage, `${root}/${this.cutString(data.name)}`);
                   const uploadTask = uploadBytesResumable(reference, data);
       
                   uploadTask.on('state_changed', 
                     (snapshot) => {
                       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                      onProgressChange({ failed: false, finished: false, name: data.name, progress: progress.toString() });
+                      onProgressChange({ failed: false, finished: false, name: this.cutString(data.name), progress: progress.toString() });
                       console.log('Upload is ' + progress + '% done');
                       switch (snapshot.state) {
                         case 'paused':
@@ -158,9 +168,9 @@ export class MisoFileDataSource implements MisoFiles{
                     }, 
                     () => {
                       getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-                        const fileRef = { name: data.name, path: downloadURL } as FileRef;
-                        await this.checkRegister(data.name, fileRef, isRef);
-                        onProgressChange({ failed: false, finished: true, name: data.name, progress: "100" });
+                        const fileRef = { name: this.cutString(data.name), path: downloadURL } as FileRef;
+                        await this.checkRegister(this.cutString(data.name), fileRef, isRef);
+                        onProgressChange({ failed: false, finished: true, name: this.cutString(data.name), progress: "100" });
                         console.log('File available at', downloadURL);
                       });
                     }
