@@ -8,8 +8,7 @@ import { getStorage,ref,uploadBytesResumable,getDownloadURL,deleteObject } from 
 //     console.log(data);
     
 // }
-//@ts-checkconst url = "https://misoapi-psi.vercel.app/"
-const url = "https://bright62.pythonanywhere.com/"
+const url = "https://misoapi-psi.vercel.app/"
 export interface CommitResult{
     status : boolean,
     message : string
