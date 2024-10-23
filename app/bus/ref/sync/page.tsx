@@ -7,6 +7,7 @@ import { processDataRef } from '@/app/lib/dataSources/filesRepository'
 import { getFilesRefs } from '@/app/lib/dataSources/filesRepository'
 import { deleteRef } from '@/app/lib/dataSources/filesRepository'
 import { clearDatabase } from '@/app/lib/dataSources/filesRepository'
+import { Span } from 'next/dist/trace'
 
 
 const DeleteButton = ()=>{
@@ -24,6 +25,7 @@ const DeleteButton = ()=>{
     <div className='flex flex-row gap-4'>{
       toDelete &&
       <input onChange={e=>setCode(e.target.value)} placeholder='enter code to continue' className='border-2 rounded-lg border-red-700 text-red-600 p-2' type="text" />}
+      {result?.status == true && <span>Table Dropped</span>}
       
       <button disabled={deleting} onClick={async()=>{
         if(!toDelete) return setToDelete(true)
