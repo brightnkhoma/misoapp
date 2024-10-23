@@ -7,7 +7,6 @@ import { processDataRef } from '@/app/lib/dataSources/filesRepository'
 import { getFilesRefs } from '@/app/lib/dataSources/filesRepository'
 import { deleteRef } from '@/app/lib/dataSources/filesRepository'
 import { clearDatabase } from '@/app/lib/dataSources/filesRepository'
-import { Span } from 'next/dist/trace'
 
 
 const DeleteButton = ()=>{
