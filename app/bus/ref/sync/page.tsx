@@ -38,7 +38,7 @@ const DeleteButton = ()=>{
           
         })
       }} className='border px-4  rounded-lg'>
-        drop table
+        {deleting ? "deleting..." : "drop table"}
       </button>
     </div>
   )
