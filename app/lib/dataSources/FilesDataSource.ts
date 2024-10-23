@@ -259,7 +259,7 @@ export class MisoFileDataSource implements MisoFiles{
     async checkRegister(name : string,file : FileRef,isRef : boolean = false) : Promise<CommitResult>{
         try {
             const path = isRef? "miso/ref/data" : "miso/data/data"
-            const dbDoc = doc(db,path,name)
+            const dbDoc = doc(db,path,this.cutString(name))
             await setDoc(dbDoc,file)
             return {status : true, message : "file registered"}            
         } catch (error) {
