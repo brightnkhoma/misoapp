@@ -28,11 +28,16 @@ export default function Page() {
   useEffect(()=>{
     if(!refs){
       getRefs()
-      if(refs){
-        setSelectedRef(refs[0])
-      }
   }
   })
+  useEffect(()=>{
+    if(refs && !selectedRef){
+      const size = refs.length
+      const it = refs[size-1]
+      setSelectedRef(it)
+      
+  }
+  },[refs])
   return (
     <div className='flex-1 flex flex-col p-8'>
       <div className='w-full h-full flex flex-col gap-8 flex-wrap overflow-auto'>
@@ -41,7 +46,7 @@ export default function Page() {
           {
             refs && refs.map((value,index)=>(
               <div key={index}>
-                <RefComponent ref={{name: "",path : "",status : false}} checked = {selectedRef == value} data={value} onClick={setSelectedRef}/>
+                <RefComponent ref={{name: "",path : "",status : false}} checked = {selectedRef == value} data={value} onClick={data =>setSelectedRef(data)}/>
               </div>
             ))
           }
@@ -50,9 +55,11 @@ export default function Page() {
         <div className='flex flex-row gap-4 overflow-auto'>
 
         {
-          files && refs && files.map((value,index)=>(
+          selectedRef && files && refs && files.map((value,index)=>(
             <div key={index}>
-              <ExcelFileComponent ref={selectedRef} data={value}/>
+              
+              <ExcelFileComponent name={value.name ? value.name : "merged.xlsx"} xpath={value.path ? value.path : ""} data={value}/>
+              
             </div>
           ))
         }
@@ -77,7 +84,7 @@ interface RefProps{
 const RefComponent : React.FC<RefProps> = ({checked,data,onClick,ref})=>{
   return(
     <div className='flex flex-col gap-4'>
-      <ExcelFileComponent ref={ref} data={data}/>
+      <ExcelFileComponent name={ref ? ref.name ? ref.name : "" : ""} xpath={ref ?ref.path? ref.path : "" : ""} data={data}/>
       <input onClick={()=>onClick(data)} type="radio" checked = {checked} />
     </div>
   )
@@ -85,9 +92,10 @@ const RefComponent : React.FC<RefProps> = ({checked,data,onClick,ref})=>{
 
 interface ExcelProps{
   data : MisoFile,
-  ref : MisoFile | undefined
+  xpath : string,
+  name : string 
 }
-const ExcelFileComponent : React.FC<ExcelProps> = ({data,ref})=>{
+const ExcelFileComponent : React.FC<ExcelProps> = ({data,name,xpath})=>{
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<CommitResult>()
   const [deleting, setDeleting] = useState<boolean>(false)
@@ -99,10 +107,10 @@ const ExcelFileComponent : React.FC<ExcelProps> = ({data,ref})=>{
       <div className='w-full flex flex-row items-center justify-center gap-4'>
 
       <button disabled={loading} className={`${loading ? "animate-spin" : "animate-none" } bg-transparent ${error && error?.status == false ? "bg-red-500" :  "bg-green-500"} mb-2`} onClick={async()=>{
-        setLoading(true)
         setPath("")
-        if(ref)
-        await processData(data.name,data.path,ref,data=>{
+        setLoading(true)
+        await processData(data.name,data.path,{name : "Merged.xlsx"
+,path : "https://firebasestorage.googleapis.com/v0/b/kwathu-b7b68.appspot.com/o/miso%2Fdata%2FMerged.xlsx?alt=media&token=9e892088-c354-4893-bc83-13a14447f542",status : true},data=>{
         setPath(data)
         setLoading(false)
         setError({} as CommitResult)
@@ -112,8 +120,9 @@ const ExcelFileComponent : React.FC<ExcelProps> = ({data,ref})=>{
         setError(failure)
         setLoading(false)
         })}
+      }
         
-        }>
+        >
       <FaUpload color={path ? "green" : "blue"}/>
       </button>
 
