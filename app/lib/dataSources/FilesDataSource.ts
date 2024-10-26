@@ -8,8 +8,8 @@ import { getStorage,ref,uploadBytesResumable,getDownloadURL,deleteObject } from 
 //     console.log(data);
     
 // }
-//const url = "https://misoapi-psi.vercel.app/"
-const url = "https://misoapi-q48a.onrender.com/"
+const url = "https://misoapi-psi.vercel.app/"
+// const url = "https://misoapi-q48a.onrender.com/"
 export interface CommitResult{
     status : boolean,
     message : string
@@ -74,6 +74,8 @@ export class MisoFileDataSource implements MisoFiles{
     }
     async process(name: string, path: string,ref : MisoFile, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
       try {
+        if(!ref.name) return console.log(ref);
+        
 
 
         const res = await axios.post(`${url}addnumber/`,{name : name, path : path, ref : ref.path, refname : ref.name},{
@@ -95,6 +97,8 @@ export class MisoFileDataSource implements MisoFiles{
         }
         
       } catch (error) {
+        console.log(error);
+        
         onFailure({status : false, message : "something went wrong"})        
         
       }

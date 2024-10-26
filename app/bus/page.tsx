@@ -12,7 +12,7 @@ export default function Page() {
   const [files, setFiles] = useState<Array<MisoFile>>()
   const [refs,setRefs] = useState<Array<MisoFile>>()
   const [error, setError] = useState<CommitResult>()
-  const [selectedRef, setSelectedRef] = useState<MisoFile>({name : "",path:"",status : false})
+  const [selectedRef, setSelectedRef] = useState<MisoFile>()
 
   async function get() {
     await getFiles(data=>setFiles(data),error =>setError(error))        
@@ -41,7 +41,7 @@ export default function Page() {
           {
             refs && refs.map((value,index)=>(
               <div key={index}>
-                <RefComponent ref={selectedRef} checked = {selectedRef == value} data={value} onClick={setSelectedRef}/>
+                <RefComponent ref={{name: "",path : "",status : false}} checked = {selectedRef == value} data={value} onClick={setSelectedRef}/>
               </div>
             ))
           }
@@ -50,7 +50,7 @@ export default function Page() {
         <div className='flex flex-row gap-4 overflow-auto'>
 
         {
-          files && files.map((value,index)=>(
+          files && refs && files.map((value,index)=>(
             <div key={index}>
               <ExcelFileComponent ref={selectedRef} data={value}/>
             </div>
@@ -85,7 +85,7 @@ const RefComponent : React.FC<RefProps> = ({checked,data,onClick,ref})=>{
 
 interface ExcelProps{
   data : MisoFile,
-  ref : MisoFile
+  ref : MisoFile | undefined
 }
 const ExcelFileComponent : React.FC<ExcelProps> = ({data,ref})=>{
   const [loading, setLoading] = useState<boolean>(false)
@@ -101,6 +101,7 @@ const ExcelFileComponent : React.FC<ExcelProps> = ({data,ref})=>{
       <button disabled={loading} className={`${loading ? "animate-spin" : "animate-none" } bg-transparent ${error && error?.status == false ? "bg-red-500" :  "bg-green-500"} mb-2`} onClick={async()=>{
         setLoading(true)
         setPath("")
+        if(ref)
         await processData(data.name,data.path,ref,data=>{
         setPath(data)
         setLoading(false)
