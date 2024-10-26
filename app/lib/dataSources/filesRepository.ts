@@ -25,9 +25,9 @@ export async function getCompletedFiles(onSuccess : (data : Array<MisoCompletedF
     const dataSource = new MisoFileDataSource()
     await dataSource.fetchCompleteData(onSuccess,onFailure)
 }
-export async function processData(name : string, path : string,ref : MisoFile,onSuccess : (data : string) => void, onFailure : (data : CommitResult)=> void){
+export async function processData(name : string, path : string,ref : MisoFile,fromSnippets : boolean,onSuccess : (data : string) => void, onFailure : (data : CommitResult)=> void){
     const dataSource = new MisoFileDataSource()
-    await dataSource.process(name,path,ref,onSuccess,onFailure)
+    await dataSource.process(name,path,ref,fromSnippets,onSuccess,onFailure)
 }
 export async function processDataRef(name : string, path : string,onSuccess : (data : string) => void, onFailure : (data : CommitResult)=> void){
     const dataSource = new MisoFileDataSource()

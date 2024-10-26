@@ -13,6 +13,7 @@ export default function Page() {
   const [refs,setRefs] = useState<Array<MisoFile>>()
   const [error, setError] = useState<CommitResult>()
   const [selectedRef, setSelectedRef] = useState<MisoFile>()
+  const [fromSnippets,setFromSnippets] = useState<boolean>(true)
 
   async function get() {
     await getFiles(data=>setFiles(data),error =>setError(error))        
@@ -36,12 +37,17 @@ export default function Page() {
   }
   },[refs])
   return (
-    <div className='flex-1 flex flex-col p-8'>
-      <div className='w-full h-full flex flex-col gap-8 flex-wrap overflow-auto'>
-        <span className='text-center text-3xl text-slate-700'>process with the seledted reference</span>
-        <div className='w-full flex flex-row items-center gap-4 overflow-auto bg-slate-500 p-4'>
+    <div className='w-full flex flex-col p-2 overflow-auto'>
+      <div className='w-full h-full flex flex-col gap-8  overflow-auto'>
+        <span className='text-center text-3xl text-slate-700'>process with the selected reference</span>
+        <div onClick={()=> setFromSnippets(x=>!x)} className='w-full cursor-pointer gap-4 items-center flex flex-row p-2 justify-end'>
+          <span className='text-blue-700 text-2xl font-extrabold'>From db</span>
+
+        <input checked={fromSnippets} type="radio" />
+        </div>
+        <div className='w-full flex flex-row items-center gap-4 border max-w-[70rem]  border-slate-500 rounded-lg p-2 overflow-auto'>
           {
-            refs && refs.map((value,index)=>(
+            !fromSnippets && refs && refs.map((value,index)=>(
               <div key={index}>
                 <RefComponent myref={selectedRef as MisoFile} checked = {selectedRef == value} data={value} onClick={data =>setSelectedRef(data)}/>
               </div>
@@ -49,13 +55,13 @@ export default function Page() {
           }
 
         </div>
-        <div className='flex flex-row gap-4 overflow-auto'>
+        <div className='flex flex-row gap-4 w-screen flex-wrap max-w-[70rem]'>
 
         {
-          selectedRef && selectedRef.name && selectedRef.path && files && refs && files.map((value,index)=>(
+            files  && files.map((value,index)=>(
             <div key={index}>
               
-              <ExcelFileComponent name={selectedRef.name} xpath={selectedRef.path} data={value}/>
+              <ExcelFileComponent fromSnippets={fromSnippets} name={selectedRef? selectedRef.name : ""} xpath={ selectedRef ? selectedRef?.path : ""} data={value}/>
               
             </div>
           ))
@@ -75,7 +81,7 @@ interface RefProps{
   data : MisoFile;
   checked : boolean;
   onClick : (data : MisoFile) =>void;
-  myref : MisoFile
+  myref : MisoFile | undefined
 }
 
 const RefComponent : React.FC<RefProps> = ({checked,data,onClick,myref})=>{
@@ -83,7 +89,7 @@ const RefComponent : React.FC<RefProps> = ({checked,data,onClick,myref})=>{
     <div className='flex flex-col gap-4'>
       { myref &&
       <div>
-        <ExcelFileComponent name={myref.name} xpath={myref.path} data={data}/>
+        <ExcelFileComponent fromSnippets name={myref.name} xpath={myref.path} data={data}/>
         <input onClick={()=>onClick(data)} type="radio" checked = {checked} />
       </div>
       }
@@ -92,11 +98,12 @@ const RefComponent : React.FC<RefProps> = ({checked,data,onClick,myref})=>{
 }
 
 interface ExcelProps{
-  data : MisoFile,
-  xpath : string,
-  name : string 
+  data : MisoFile;
+  xpath : string;
+  name : string;
+  fromSnippets : boolean
 }
-const ExcelFileComponent : React.FC<ExcelProps> = ({data,name,xpath})=>{
+const ExcelFileComponent : React.FC<ExcelProps> = ({data,name,xpath,fromSnippets})=>{
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<CommitResult>()
   const [deleting, setDeleting] = useState<boolean>(false)
@@ -109,11 +116,11 @@ const ExcelFileComponent : React.FC<ExcelProps> = ({data,name,xpath})=>{
 
       <button disabled={loading} className={`${loading ? "animate-spin" : "animate-none" } bg-transparent ${error && error?.status == false ? "bg-red-500" :  "bg-green-500"} mb-2`} onClick={async()=>{
         setPath("")
-        if(xpath && name){
+        if((xpath && name) || fromSnippets){
         setLoading(true)
         console.log(xpath);
         
-        await processData(data.name,data.path,{name : name,path : xpath,status : true},data=>{
+        await processData(data.name,data.path,{name : name,path : xpath,status : true},fromSnippets,data=>{
         setPath(data)
         setLoading(false)
         setError({} as CommitResult)

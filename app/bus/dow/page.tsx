@@ -21,7 +21,7 @@ export default function Page() {
     })
   return (
     <div className='flex-1 flex flex-col p-8'>
-        <div className='w-full h-full flex flex-row gap-6'>
+        <div className='w-full h-full flex flex-row flex-wrap overflow-auto gap-6 max-w-[70rem]'>
 
         {
             files && files.map((file,index)=>(

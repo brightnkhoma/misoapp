@@ -44,7 +44,7 @@ interface MisoFiles{
     //uploadref : (path : string)=> Promise<CommitResult>;
     delete : (name : string, isDownload : boolean,onSuccess : (name : string)=> void, onFailure : (data : CommitResult)=>void)=> Promise<CommitResult>;
     //download : (path : string)=> Promise<CommitResult>; 
-    process : (name : string, path : string,ref : MisoFile, onSuccess : (path : string)=> void, onFailure : (error : CommitResult)=> void)=> void
+    process : (name : string, path : string,ref : MisoFile,fromSnippets : boolean, onSuccess : (path : string)=> void, onFailure : (error : CommitResult)=> void)=> void
     fetchData : (isRef : boolean,onSuccess : (data : Array<MisoFile>) => void, onFailure : (data : CommitResult)=> void)=>void;
     fetchCompleteData : (onSuccess : (data : Array<MisoCompletedFile>) => void, onFailure : (data : CommitResult)=> void)=>void;
     clearUsers : (code : string,onResult : (data : CommitResult) => void)=> void
@@ -75,13 +75,13 @@ export class MisoFileDataSource implements MisoFiles{
         
       }
     }
-    async process(name: string, path: string,ref : MisoFile, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
+    async process(name: string, path: string,ref : MisoFile,fromSnippets : boolean = false, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
       try {
-        if(!ref.name) return console.log(ref);
         
 
         // alert(JSON.stringify(ref))
-        const res = await axios.post(`${url}addnumber/`,{name : name, path :path, ref : ref.path, refname : ref.name},{
+        
+        const res = await axios.post(`${url}addnumber/`,{name : name, path :path, ref : ref.path, refname : ref.name,fromSnippets : fromSnippets},{
           headers: {
             'Content-Type': 'application/json',
         }
@@ -111,7 +111,7 @@ export class MisoFileDataSource implements MisoFiles{
     async processRef(name: string, path: string, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
       try {
 
-        const res = await axios.post(`${url}feeddata/`,{name : name, path : path},{
+        const res = await axios.post(`${url}populate/`,{name : name, path : path},{
           headers: {
             'Content-Type': 'application/json',
         },
@@ -156,9 +156,9 @@ export class MisoFileDataSource implements MisoFiles{
         
       }
     }
-    cutString(word : string) : string{
+    cutString(word : string,index : string) : string{
       const ext = word.split(".")[1].toLowerCase()
-      const newWord = word.length > 40 ? word.substring(0,35) + "." + ext : word
+      const newWord = word.length > 40 ? index + word.substring(0,35) + "." + ext : word
       return newWord
 
     }
@@ -174,16 +174,17 @@ export class MisoFileDataSource implements MisoFiles{
       
         try {
           await Promise.all(
-            Array.from(path).map(async (data) => {
+            Array.from(path).map(async (data, index) => {
               try {
                 const x = await this.checkFileExistence(data.name, isRef);
                 if (x==false) {
-                  const reference = ref(storage, `${root}/${this.cutString(data.name)}`);
+                  const reference = ref(storage, `${root}/${this.cutString(data.name,index.toString())}`);
                   const uploadTask = uploadBytesResumable(reference, data);
       
                   uploadTask.on('state_changed', 
                     (snapshot) => {
                       const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                      
                       onProgressChange({ failed: false, finished: false, name: data.name, progress: progress.toString() });
                       console.log('Upload is ' + progress + '% done');
                       switch (snapshot.state) {
@@ -201,8 +202,11 @@ export class MisoFileDataSource implements MisoFiles{
                     }, 
                     () => {
                       getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-                        const fileRef = { name: this.cutString(data.name), path: downloadURL } as FileRef;
-                        await this.checkRegister(data.name, fileRef, isRef);
+                        const name = this.cutString(data.name,index.toString())
+                        const fileRef = { name:name, path: downloadURL } as FileRef;
+
+                        await this.checkRegister(name, fileRef, isRef);
+
                         onProgressChange({ failed: false, finished: true, name: data.name, progress: "100" });
                         console.log('File available at', downloadURL);
                       });
@@ -212,7 +216,8 @@ export class MisoFileDataSource implements MisoFiles{
                   console.log("exists")
                   console.log(x)
                     const message = x == null ? "error" : "exists"
-                    onProgressChange({ failed: true, finished: false, name: data.name, progress: message });
+                    const name = this.cutString(data.name,index.toString())
+                    onProgressChange({ failed: true, finished: false, name: name, progress: message });
                 }
               } catch (error) {
                 console.log(error);
@@ -297,7 +302,7 @@ export class MisoFileDataSource implements MisoFiles{
     async checkRegister(name : string,file : FileRef,isRef : boolean = false) : Promise<CommitResult>{
         try {
             const path = isRef? "miso/ref/data" : "miso/data/data"
-            const dbDoc = doc(db,path,this.cutString(name))
+            const dbDoc = doc(db,path,this.cutString(name,""))
             await setDoc(dbDoc,file)
             return {status : true, message : "file registered"}            
         } catch (error) {
