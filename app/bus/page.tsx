@@ -6,28 +6,57 @@ import { getFiles } from '../lib/dataSources/filesRepository'
 import { CommitResult, MisoFile } from '../lib/dataSources/FilesDataSource'
 import { processData } from '../lib/dataSources/filesRepository'
 import { deleteDataRefs } from '../lib/dataSources/filesRepository'
+import { getFilesRefs } from '../lib/dataSources/filesRepository'
 
 export default function Page() {
   const [files, setFiles] = useState<Array<MisoFile>>()
+  const [refs,setRefs] = useState<Array<MisoFile>>()
   const [error, setError] = useState<CommitResult>()
+  const [selectedRef, setSelectedRef] = useState<MisoFile>({name : "",path:"",status : false})
+
   async function get() {
     await getFiles(data=>setFiles(data),error =>setError(error))        
+  }
+  async function getRefs() {
+    await getFilesRefs(data=>setRefs(data),error =>setError(error))        
   }
   useEffect(()=>{
     if(!files){
       get()
   }
   })
+  useEffect(()=>{
+    if(!refs){
+      getRefs()
+      if(refs){
+        setSelectedRef(refs[0])
+      }
+  }
+  })
   return (
     <div className='flex-1 flex flex-col p-8'>
       <div className='w-full h-full flex flex-col gap-8 flex-wrap overflow-auto'>
+        <span className='text-center text-3xl text-slate-700'>process with the seledted reference</span>
+        <div className='w-full flex flex-row items-center gap-4 overflow-auto bg-slate-500 p-4'>
+          {
+            refs && refs.map((value,index)=>(
+              <div key={index}>
+                <RefComponent ref={selectedRef} checked = {selectedRef == value} data={value} onClick={setSelectedRef}/>
+              </div>
+            ))
+          }
+
+        </div>
+        <div className='flex flex-row gap-4 overflow-auto'>
+
         {
           files && files.map((value,index)=>(
             <div key={index}>
-              <ExcelFileComponent data={value}/>
+              <ExcelFileComponent ref={selectedRef} data={value}/>
             </div>
           ))
         }
+        </div>
       <span className='text-center text-red-600'>{error && error.message}</span>
         
 
@@ -38,10 +67,27 @@ export default function Page() {
   )
 }
 
-interface ExcelProps{
-  data : MisoFile
+interface RefProps{
+  data : MisoFile,
+  checked : boolean,
+  onClick : (data : MisoFile) =>void,
+  ref : MisoFile
 }
-const ExcelFileComponent : React.FC<ExcelProps> = ({data})=>{
+
+const RefComponent : React.FC<RefProps> = ({checked,data,onClick,ref})=>{
+  return(
+    <div className='flex flex-col gap-4'>
+      <ExcelFileComponent ref={ref} data={data}/>
+      <input onClick={()=>onClick(data)} type="radio" checked = {checked} />
+    </div>
+  )
+}
+
+interface ExcelProps{
+  data : MisoFile,
+  ref : MisoFile
+}
+const ExcelFileComponent : React.FC<ExcelProps> = ({data,ref})=>{
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<CommitResult>()
   const [deleting, setDeleting] = useState<boolean>(false)
@@ -55,7 +101,7 @@ const ExcelFileComponent : React.FC<ExcelProps> = ({data})=>{
       <button disabled={loading} className={`${loading ? "animate-spin" : "animate-none" } bg-transparent ${error && error?.status == false ? "bg-red-500" :  "bg-green-500"} mb-2`} onClick={async()=>{
         setLoading(true)
         setPath("")
-        await processData(data.name,data.path,data=>{
+        await processData(data.name,data.path,ref,data=>{
         setPath(data)
         setLoading(false)
         setError({} as CommitResult)

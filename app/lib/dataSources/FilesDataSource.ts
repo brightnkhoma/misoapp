@@ -41,7 +41,7 @@ interface MisoFiles{
     //uploadref : (path : string)=> Promise<CommitResult>;
     delete : (name : string, isDownload : boolean,onSuccess : (name : string)=> void, onFailure : (data : CommitResult)=>void)=> Promise<CommitResult>;
     //download : (path : string)=> Promise<CommitResult>; 
-    process : (name : string, path : string, onSuccess : (path : string)=> void, onFailure : (error : CommitResult)=> void)=> void
+    process : (name : string, path : string,ref : MisoFile, onSuccess : (path : string)=> void, onFailure : (error : CommitResult)=> void)=> void
     fetchData : (isRef : boolean,onSuccess : (data : Array<MisoFile>) => void, onFailure : (data : CommitResult)=> void)=>void;
     fetchCompleteData : (onSuccess : (data : Array<MisoCompletedFile>) => void, onFailure : (data : CommitResult)=> void)=>void;
     clearUsers : (code : string,onResult : (data : CommitResult) => void)=> void
@@ -72,10 +72,11 @@ export class MisoFileDataSource implements MisoFiles{
         
       }
     }
-    async process(name: string, path: string, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
+    async process(name: string, path: string,ref : MisoFile, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
       try {
 
-        const res = await axios.post(`${url}addnumber/`,{name : name, path : path},{
+
+        const res = await axios.post(`${url}addnumber/`,{name : name, path : path, ref : ref.path, refname : ref.name},{
           headers: {
             'Content-Type': 'application/json',
         }
