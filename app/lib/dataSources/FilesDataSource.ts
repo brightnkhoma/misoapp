@@ -114,7 +114,7 @@ export class MisoFileDataSource implements MisoFiles{
         }
         
       } catch (error) {
-        onFailure({status : false, message : "something went wrong"})        
+        onFailure({status : false, message : "something went wrong \n" + error})        
         
       }
     }
