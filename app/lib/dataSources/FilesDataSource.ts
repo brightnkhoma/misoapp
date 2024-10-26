@@ -9,8 +9,8 @@ import { getStorage,ref,uploadBytesResumable,getDownloadURL,deleteObject } from 
     
 // }
 // const url = "https://misoapi-2c65i0l1o-bright-nkhomas-projects.vercel.app/"
-// const url = "https://misoapi-psi.vercel.app/"
-const url = "http://192.168.43.56:8000/"
+const url = "https://misoapi-psi.vercel.app/"
+// const url = "http://192.168.43.56:8000/"
 // const url = "https://misoapi-q48a.onrender.com/"
 export interface CommitResult{
     status : boolean,
