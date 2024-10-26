@@ -143,7 +143,8 @@ export class MisoFileDataSource implements MisoFiles{
       }
     }
     cutString(word : string) : string{
-      const newWord = word.length > 40 ? word.substring(0,35) + ".xlsx" : word
+      const ext = word.split(".")[1]
+      const newWord = word.length > 40 ? word.substring(0,35) + ext : word
       return newWord
 
     }
