@@ -104,7 +104,7 @@ export class MisoFileDataSource implements MisoFiles{
           headers: {
             'Content-Type': 'application/json',
         },
-        timeout: 1000000 
+        timeout : 60000000
         })
         
         const data = {status : res.data.status, message : res.data.message}
