@@ -103,7 +103,8 @@ export class MisoFileDataSource implements MisoFiles{
         const res = await axios.post(`${url}feeddata/`,{name : name, path : path},{
           headers: {
             'Content-Type': 'application/json',
-        }
+        },
+        timeout: 1000000 
         })
         
         const data = {status : res.data.status, message : res.data.message}
