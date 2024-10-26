@@ -55,7 +55,7 @@ export default function Page() {
           selectedRef && selectedRef.name && selectedRef.path && files && refs && files.map((value,index)=>(
             <div key={index}>
               
-              <ExcelFileComponent name={value.name} xpath={value.path} data={value}/>
+              <ExcelFileComponent name={selectedRef.name} xpath={selectedRef.path} data={value}/>
               
             </div>
           ))
@@ -111,6 +111,8 @@ const ExcelFileComponent : React.FC<ExcelProps> = ({data,name,xpath})=>{
         setPath("")
         if(xpath && name){
         setLoading(true)
+        console.log(xpath);
+        
         await processData(data.name,data.path,{name : name,path : xpath,status : true},data=>{
         setPath(data)
         setLoading(false)

@@ -8,8 +8,9 @@ import { getStorage,ref,uploadBytesResumable,getDownloadURL,deleteObject } from 
 //     console.log(data);
     
 // }
-const url = "https://misoapi-2c65i0l1o-bright-nkhomas-projects.vercel.app/"
+// const url = "https://misoapi-2c65i0l1o-bright-nkhomas-projects.vercel.app/"
 // const url = "https://misoapi-psi.vercel.app/"
+const url = "http://192.168.43.56:8000/"
 // const url = "https://misoapi-q48a.onrender.com/"
 export interface CommitResult{
     status : boolean,
@@ -79,7 +80,7 @@ export class MisoFileDataSource implements MisoFiles{
         
 
         // alert(JSON.stringify(ref))
-        const res = await axios.post(`${url}addnumber/`,{name : "merged.xlsx", path : "https://firebasestorage.googleapis.com/v0/b/kwathu-b7b68.appspot.com/o/miso%2Fdata%2FMerged.xlsx?alt=media&token=46c98d99-a061-4dcb-a2b9-882e3ff5113b", ref : ref.path, refname : ref.name},{
+        const res = await axios.post(`${url}addnumber/`,{name : name, path :path, ref : ref.path, refname : ref.name},{
           headers: {
             'Content-Type': 'application/json',
         }
