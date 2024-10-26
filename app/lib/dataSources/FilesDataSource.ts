@@ -50,11 +50,13 @@ export class MisoFileDataSource implements MisoFiles{
     async clearUsers(code: string, onResult: (data: CommitResult) => void){
       try {
         if(code != "sudodelete1234") return onResult({status : false,message : "wrong code"})
-        const res = await axios.post(`${url}clear/`,{
-          headers: {
-            'Content-Type': 'application/json',
-        }
-        })
+          const res = await axios.post(`${url}clear/`, {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            timeout: 1000000 
+        });
+        
         
         const data = {status : res.data.status, message : res.data.message}
         console.log(data);
