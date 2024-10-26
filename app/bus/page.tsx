@@ -108,6 +108,9 @@ const ExcelFileComponent : React.FC<ExcelProps> = ({data,name,xpath})=>{
 
       <button disabled={loading} className={`${loading ? "animate-spin" : "animate-none" } bg-transparent ${error && error?.status == false ? "bg-red-500" :  "bg-green-500"} mb-2`} onClick={async()=>{
         setPath("")
+        console.log(name);
+        console.log(xpath);
+        
         setLoading(true)
         await processData(data.name,data.path,{name : "Merged.xlsx"
 ,path : "https://firebasestorage.googleapis.com/v0/b/kwathu-b7b68.appspot.com/o/miso%2Fdata%2FMerged.xlsx?alt=media&token=9e892088-c354-4893-bc83-13a14447f542",status : true},data=>{
