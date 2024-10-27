@@ -37,7 +37,7 @@ export default function Page() {
   }
   },[refs])
   return (
-    <div className='w-full flex flex-col p-2 overflow-auto'>
+    <div className='w-full flex flex-col p-2 overflow-auto '>
       <div className='w-full h-full flex flex-col gap-8  overflow-auto'>
         <span className='text-center text-3xl text-slate-700'>process with the selected reference</span>
         <div onClick={()=> setFromSnippets(x=>!x)} className='w-full cursor-pointer gap-4 items-center flex flex-row p-2 justify-end'>
