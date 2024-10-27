@@ -104,7 +104,7 @@ const FileUpload = ()=>{
 
   return(
     <div className="w-full ">
-      <input onChange={e=>onFileChange(e)} ref={ref} type="file" multiple className="hidden"/>
+      <input accept=".csv, .xlsx, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={e=>onFileChange(e)} ref={ref} type="file" multiple className="hidden"/>
       <div  className="w-full flex flex-row items-center  gap-4 mt-4">
         <UploadButton  onPress={onSelect} icon={FaHandPointer} action="Select"/>
         <UploadButton onPress={onUpload} icon={FaUpload} action={`${uploading ? "uploading" : "upload"}`}/>
@@ -116,7 +116,7 @@ const FileUpload = ()=>{
         className: 'border-2 border-dashed border-gray-300 p-6 text-center cursor-pointer',
       })}
       className="bg-gray-100 min-w-max w-[40%] mt-10 h-[300px] flex justify-center items-center rounded-lg cursor-pointer hover:opacity-80 ">
-      <input {...getInputProps()} />
+      <input accept=".csv, .xlsx, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {...getInputProps()} />
         <span className="text-slate-700 font-extrabold text-center m-10">Drag and Drop xlsx Files</span>
 
       </div>
