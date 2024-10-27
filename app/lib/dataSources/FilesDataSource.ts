@@ -247,7 +247,6 @@ export class MisoFileDataSource implements MisoFiles{
         const dbdoc = doc(db,docRef,name)
         const reference = ref(storage,`${root}/${name}`)
         await deleteObject(reference).catch(e=>{
-          console.log(e);
           onFailure({status : false, message : "something went wrong"})                 
 
         })
