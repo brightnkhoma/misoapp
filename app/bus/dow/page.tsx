@@ -67,8 +67,8 @@ interface ExcelProps{
                     setDeleting(false)
                     
                 })
-            }} className={`${deleting ? "animate-pulse" : "animate-none"}`}>
-                <FaTrash color='red'/>
+            }} className={`${deleting ? "animate-ping" : "animate-none"}`}>
+                <FaTrash color='gray'/>
             </button>
         </div>
   

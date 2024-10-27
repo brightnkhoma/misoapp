@@ -117,7 +117,11 @@ const FileUpload = ()=>{
       })}
       className="bg-gray-100 min-w-max w-[40%] mt-10 h-[300px] flex justify-center items-center rounded-lg cursor-pointer hover:opacity-80 ">
       <input accept=".csv, .xlsx, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" {...getInputProps()} />
-        <span className="text-slate-700 font-extrabold text-center m-10">Drag and Drop xlsx Files</span>
+      <div className="flex flex-col items-center justify-center">
+        <span className="text-slate-700 font-extrabold text-center mx-10">Drag and Drop xlsx Files</span>
+        <span className="text-slate-700 font-extrabold text-center mx-10">For reference</span>
+
+      </div>
 
       </div>
       <div className="flex flex-col h-[300px]  overflow-auto  mt-10">

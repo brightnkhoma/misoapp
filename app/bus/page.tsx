@@ -13,7 +13,6 @@ export default function Page() {
   const [refs,setRefs] = useState<Array<MisoFile>>()
   const [error, setError] = useState<CommitResult>()
   const [selectedRef, setSelectedRef] = useState<MisoFile>()
-  const [fromSnippets,setFromSnippets] = useState<boolean>(true)
 
   async function get() {
     await getFiles(data=>setFiles(data),error =>setError(error))        
@@ -39,29 +38,20 @@ export default function Page() {
   return (
     <div className='w-full flex flex-col p-2 overflow-auto '>
       <div className='w-full h-full flex flex-col gap-8  overflow-auto'>
-        <span className='text-center text-3xl text-slate-700'>process with the selected reference</span>
-        <div onClick={()=> setFromSnippets(x=>!x)} className='w-full cursor-pointer gap-4 items-center flex flex-row p-2 justify-end'>
+
+        <div  className='w-full cursor-pointer gap-4 items-center flex flex-row p-2 justify-end'>
           <span className='text-blue-700 text-2xl font-extrabold'>From db</span>
 
-        <input checked={fromSnippets} type="radio" />
+        <input checked={true} type="radio" />
         </div>
-        <div className='w-full flex flex-row items-center gap-4 border max-w-[70rem]  border-slate-500 rounded-lg p-2 overflow-auto'>
-          {
-            !fromSnippets && refs && refs.map((value,index)=>(
-              <div key={index}>
-                <RefComponent myref={selectedRef as MisoFile} checked = {selectedRef == value} data={value} onClick={data =>setSelectedRef(data)}/>
-              </div>
-            ))
-          }
 
-        </div>
         <div className='flex flex-row gap-4 w-screen flex-wrap max-w-[70rem]'>
 
         {
             files  && files.map((value,index)=>(
             <div key={index}>
               
-              <ExcelFileComponent fromSnippets={fromSnippets} name={selectedRef? selectedRef.name : ""} xpath={ selectedRef ? selectedRef?.path : ""} data={value}/>
+              <ExcelFileComponent fromSnippets={true} name={selectedRef? selectedRef.name : ""} xpath={ selectedRef ? selectedRef?.path : ""} data={value}/>
               
             </div>
           ))
@@ -77,25 +67,25 @@ export default function Page() {
   )
 }
 
-interface RefProps{
-  data : MisoFile;
-  checked : boolean;
-  onClick : (data : MisoFile) =>void;
-  myref : MisoFile | undefined
-}
+// interface RefProps{
+//   data : MisoFile;
+//   checked : boolean;
+//   onClick : (data : MisoFile) =>void;
+//   myref : MisoFile | undefined
+// }
 
-const RefComponent : React.FC<RefProps> = ({checked,data,onClick,myref})=>{
-  return(
-    <div className='flex flex-col gap-4'>
-      { myref &&
-      <div>
-        <ExcelFileComponent fromSnippets name={myref.name} xpath={myref.path} data={data}/>
-        <input onClick={()=>onClick(data)} type="radio" checked = {checked} />
-      </div>
-      }
-    </div>
-  )
-}
+// const RefComponent : React.FC<RefProps> = ({checked,data,onClick,myref})=>{
+//   return(
+//     <div className='flex flex-col gap-4'>
+//       { myref &&
+//       <div>
+//         <ExcelFileComponent fromSnippets name={myref.name} xpath={myref.path} data={data}/>
+//         <input onClick={()=>onClick(data)} type="radio" checked = {checked} />
+//       </div>
+//       }
+//     </div>
+//   )
+// }
 
 interface ExcelProps{
   data : MisoFile;
