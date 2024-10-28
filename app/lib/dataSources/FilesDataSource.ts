@@ -2,6 +2,7 @@ import axios from 'axios';
 import {db} from '../data/firebase'
 import { getDoc,getDocs,setDoc,doc, collection, deleteDoc } from 'firebase/firestore';
 import { getStorage,ref,uploadBytesResumable,getDownloadURL,deleteObject } from 'firebase/storage';
+import firebase from 'firebase/compat/app';
 
 
 // const log = (data :any)=>{
@@ -11,8 +12,8 @@ import { getStorage,ref,uploadBytesResumable,getDownloadURL,deleteObject } from 
 // const url = "https://misoapi-2c65i0l1o-bright-nkhomas-projects.vercel.app/"
 // const url = "https://misoapi-psi.vercel.app/"
 // const url = "https://misoapi-1hk5ush0r-bright-nkhomas-projects.vercel.app/"
-// const url = "http://192.168.43.56:8000/"
-const url = "https://misoapi-q48a.onrender.com/"
+const url = "http://192.168.43.56:8000/"
+// const url = "https://misoapi-q48a.onrender.com/"
 export interface CommitResult{
     status : boolean,
     message : string
@@ -51,6 +52,7 @@ interface MisoFiles{
 }
 
 export class MisoFileDataSource implements MisoFiles{
+  
     async clearUsers(code: string, onResult: (data: CommitResult) => void){
       try {
         if(code != "sudodelete1234") return onResult({status : false,message : "wrong code"})
@@ -156,12 +158,12 @@ export class MisoFileDataSource implements MisoFiles{
         
       }
     }
-    cutString(word : string,index : string) : string{
-      const ext = word.split(".")[1].toLowerCase()
-      const newWord = word.length > 40 ? index + word.substring(0,35) + "." + ext : word
-      return newWord
+    // cutString(word : string,index : string) : string{
+    //   const ext = word.split(".")[1].toLowerCase()
+    //   const newWord = word.length > 40 ? index + word.substring(0,35) + "." + ext : word
+    //   return newWord
 
-    }
+    // }
     async upload(
         path: FileList, 
         onProgressChange: (progress: Progress) => void, 
@@ -174,11 +176,11 @@ export class MisoFileDataSource implements MisoFiles{
       
         try {
           await Promise.all(
-            Array.from(path).map(async (data, index) => {
+            Array.from(path).map(async (data) => {
               try {
                 const x = await this.checkFileExistence(data.name, isRef);
                 if (x==false) {
-                  const reference = ref(storage, `${root}/${this.cutString(data.name,index.toString())}`);
+                  const reference = ref(storage, `${root}/${data.name}`);
                   const uploadTask = uploadBytesResumable(reference, data);
       
                   uploadTask.on('state_changed', 
@@ -202,7 +204,7 @@ export class MisoFileDataSource implements MisoFiles{
                     }, 
                     () => {
                       getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-                        const name = this.cutString(data.name,index.toString())
+                        const name = data.name
                         const fileRef = { name:name, path: downloadURL } as FileRef;
 
                         await this.checkRegister(name, fileRef, isRef);
@@ -216,7 +218,7 @@ export class MisoFileDataSource implements MisoFiles{
                   console.log("exists")
                   console.log(x)
                     const message = x == null ? "error" : "exists"
-                    const name = this.cutString(data.name,index.toString())
+                    const name = data.name
                     onProgressChange({ failed: true, finished: false, name: name, progress: message });
                 }
               } catch (error) {
@@ -245,13 +247,17 @@ export class MisoFileDataSource implements MisoFiles{
         const root = isDownload ? "miso/data/processed" : "miso/data";
         const docRef = isDownload ? "miso/data/processed" : "miso/data/data"
         const dbdoc = doc(db,docRef,name)
-        const reference = ref(storage,`${root}/${name}`)
-        await deleteObject(reference).catch(e=>{
-          console.log(e);
-          onFailure({status : false, message : "something went wrong"})                 
 
+        const reference = ref(storage,`${root}/${name}`)
+        await deleteDoc(dbdoc).then(async()=>{
+
+          await deleteObject(reference).catch(e=>{
+            console.log(e);
+            onFailure({status : false, message : "something went wrong"})                 
+  
+          })
         })
-        await deleteDoc(dbdoc)
+
         onSuccess(name)
         
       } catch (error) {
@@ -262,25 +268,29 @@ export class MisoFileDataSource implements MisoFiles{
         return {} as CommitResult
     }
     async deleteRef (name: string,onSuccess : (name : string)=> void, onFailure : (data : CommitResult)=>void) : Promise<CommitResult>{
-      try {
-        const storage = getStorage();
-        const root = "miso/data";
-        const docRef = "miso/ref/data" 
-        const dbdoc = doc(db,docRef,name)
-        const reference = ref(storage,`${root}/${name}`)
-        await deleteObject(reference).catch(e=>{
-          console.log(e);
-          onFailure({status : false, message : "something went wrong"})                 
+      // try {
+      //   const storage = getStorage();
+      //   const root = "miso/data";
+      //   const docRef = "miso/ref/data" 
+      //   const dbdoc = doc(db,docRef,name)
+      //   const reference = ref(storage,`${root}/${name}`)
+      //   await deleteObject(reference).catch(e=>{
+      //     console.log(e);
+      //     onFailure({status : false, message : "something went wrong"})                 
 
-        })
-        await deleteDoc(dbdoc)
+      //   })
+      //   await deleteDoc(dbdoc)
+      //   onSuccess(name)
+        
+      // } catch (error) {
+      //   onFailure({status : false, message : "something went wrong"})       
+
+        
+      // }
+      const docRef = "miso/ref/data/" + name
+      await deleteFileAndReference(docRef).then(()=>{
         onSuccess(name)
-        
-      } catch (error) {
-        onFailure({status : false, message : "something went wrong"})       
-
-        
-      }
+      }).catch(e=>onFailure({status : false, message : `something went wrong \n${e}`}) )
         return {} as CommitResult
     }
     // async download (path: string) : Promise<CommitResult>{
@@ -302,7 +312,7 @@ export class MisoFileDataSource implements MisoFiles{
     async checkRegister(name : string,file : FileRef,isRef : boolean = false) : Promise<CommitResult>{
         try {
             const path = isRef? "miso/ref/data" : "miso/data/data"
-            const dbDoc = doc(db,path,this.cutString(name,""))
+            const dbDoc = doc(db,path,name)
             await setDoc(dbDoc,file)
             return {status : true, message : "file registered"}            
         } catch (error) {
@@ -311,4 +321,31 @@ export class MisoFileDataSource implements MisoFiles{
                 }
     }
 
+}
+
+// ... (Firebase initialization)
+
+async function deleteFileAndReference(documentId : string) {
+  const firestore = firebase.firestore();
+  const storage = new Storage();
+
+  try {
+    await firestore.runTransaction(async (transaction) => {
+      const documentRef = firestore.doc(`${documentId}`);
+      const docSnapshot = await transaction.get(documentRef);
+
+      if ( docSnapshot.exists) {
+        const storedFile = docSnapshot.data() as MisoFile; 
+        const fileUrl = storedFile.path
+        const bucket = storage.bucket();
+        const file = bucket.file(fileUrl.split('/').pop());
+        await file.delete();
+
+        transaction.delete(documentRef);
+      }
+    });
+  } catch (error) {
+    console.error('Error deleting file and reference:', error);
+    // Implement retry logic or other error handling strategies
+  }
 }

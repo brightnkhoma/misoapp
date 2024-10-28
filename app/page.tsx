@@ -110,7 +110,7 @@ const FileUpload = ()=>{
         <UploadButton onPress={onUpload} icon={FaUpload} action={`${uploading ? "uploading" : "upload"}`}/>
       </div>
 
-      <div className="flex flex-row flex-wrap h-full justify-between w-full">
+      <div className="flex flex-row flex-wrap h-full gap-8 w-full">
       <div
       {...getRootProps({
         className: 'border-2 border-dashed border-gray-300 p-6 text-center cursor-pointer',
@@ -128,7 +128,6 @@ const FileUpload = ()=>{
          progress && Array.from(progress).map((value,index)=>(          
           <div key={index} className="flex flex-row items-center gap-4 ">
             <span  className="text-slate-600 font-semibold my-1 truncate min-w-[300px] max-w-[300px]">{index + 1} {" . "} {value.name}</span>
-            <FaFileExcel/>
             <ProgressIndicator failed = {value.failed} finished={value.finished} name={value.name} progress={value.progress} />
 
           </div>
