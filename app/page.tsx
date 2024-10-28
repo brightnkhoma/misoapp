@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useRef, useState } from "react";
 import { IconType } from "react-icons";
-import {FaUpload,FaHandPointer,FaFileExcel} from 'react-icons/fa'
+import {FaUpload,FaHandPointer} from 'react-icons/fa'
 import { useDropzone } from "react-dropzone";
 import { uploadExcelFileData } from "./lib/dataSources/filesRepository";
 import { Progress } from "./lib/dataSources/FilesDataSource";

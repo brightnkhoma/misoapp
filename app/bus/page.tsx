@@ -34,7 +34,7 @@ export default function Page() {
     if(refs && !selectedRef){
       setSelectedRef(refs[0])
   }
-  },[refs])
+  },[refs,selectedRef])
   return (
     <div className='w-full flex flex-col p-2 overflow-auto '>
       <div className='w-full h-full flex flex-col gap-8  overflow-auto'>
