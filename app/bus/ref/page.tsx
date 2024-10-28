@@ -110,7 +110,7 @@ const FileUpload = ()=>{
         <UploadButton onPress={onUpload} icon={FaUpload} action={`${uploading ? "uploading" : "upload"}`}/>
       </div>
 
-      <div className="flex flex-row flex-wrap h-full justify-between w-full">
+      <div className="flex flex-row flex-wrap h-full gap-8 w-full">
       <div
       {...getRootProps({
         className: 'border-2 border-dashed border-gray-300 p-6 text-center cursor-pointer',
