@@ -2,7 +2,6 @@ import axios from 'axios';
 import {db} from '../data/firebase'
 import { getDoc,getDocs,setDoc,doc, collection, deleteDoc } from 'firebase/firestore';
 import { getStorage,ref,uploadBytesResumable,getDownloadURL,deleteObject } from 'firebase/storage';
-import firebase from 'firebase/compat/app';
 
 
 // const log = (data :any)=>{
