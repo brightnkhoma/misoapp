@@ -21,7 +21,7 @@ const DeleteButton = ()=>{
     }
   },[result])
   return(
-    <div className='flex flex-row gap-4'>{
+    <div className=' flex flex-row gap-4'>{
       toDelete &&
       <input onChange={e=>setCode(e.target.value)} placeholder='enter code to continue' className='border-2 rounded-lg border-red-700 text-red-600 p-2' type="text" />}
       {result?.status == true && <span>Table Dropped</span>}
@@ -58,7 +58,7 @@ export default function Page() {
             <div className="w-full flex flex-row justify-end p-8">
         <DeleteButton/>
       </div>
-      <div className='w-full h-full flex flex-col gap-8 flex-wrap overflow-auto'>
+      <div className='w-full h-full flex flex-row gap-8 flex-wrap overflow-auto'>
         {
           files && files.map((value,index)=>(
             <div key={index}>

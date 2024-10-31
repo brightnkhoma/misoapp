@@ -56,7 +56,7 @@ export class MisoFileDataSource implements MisoFiles{
     async clearUsers(code: string, onResult: (data: CommitResult) => void){
       try {
         if(code != "sudodelete1234") return onResult({status : false,message : "wrong code"})
-          const res = await axios.post(`${url}clear/`, {
+          const res = await axios.post(`${url}delete/`, {
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -113,7 +113,7 @@ export class MisoFileDataSource implements MisoFiles{
     async processRef(name: string, path: string, onSuccess: (path: string) => void, onFailure: (error: CommitResult) => void){
       try {
 
-        const res = await axios.post(`${url}populate/`,{name : name, path : path},{
+        const res = await axios.post(`${url}populate/`,{name : name, path : path,fromSnippets : true},{
           headers: {
             'Content-Type': 'application/json',
         },
@@ -253,7 +253,7 @@ export class MisoFileDataSource implements MisoFiles{
 
           await deleteObject(reference).catch(e=>{
             console.log(e);
-            onFailure({status : false, message : "something went wrong"})                 
+            onFailure({status : false, message : "something went wrong "+e})                 
   
           })
         })
@@ -268,29 +268,30 @@ export class MisoFileDataSource implements MisoFiles{
         return {} as CommitResult
     }
     async deleteRef (name: string,onSuccess : (name : string)=> void, onFailure : (data : CommitResult)=>void) : Promise<CommitResult>{
-      // try {
-      //   const storage = getStorage();
-      //   const root = "miso/data";
-      //   const docRef = "miso/ref/data" 
-      //   const dbdoc = doc(db,docRef,name)
-      //   const reference = ref(storage,`${root}/${name}`)
-      //   await deleteObject(reference).catch(e=>{
-      //     console.log(e);
-      //     onFailure({status : false, message : "something went wrong"})                 
-
-      //   })
-      //   await deleteDoc(dbdoc)
-      //   onSuccess(name)
-        
-      // } catch (error) {
-      //   onFailure({status : false, message : "something went wrong"})       
-
-        
-      // }
-      const docRef = "miso/ref/data/" + name
-      await deleteFileAndReference(docRef).then(()=>{
+      try {
+        const storage = getStorage();
+        const root = "miso/data";
+        const docRef = "miso/ref/data" 
+        const dbdoc = doc(db,docRef,name)
+        const reference = ref(storage,`${root}/${name}`)
+        await deleteDoc(dbdoc).then(async()=>{
+          await deleteObject(reference).catch(e=>{
+            console.log(e);
+            onFailure({status : false, message : "something went wrong"})                 
+  
+          })
+        })
         onSuccess(name)
-      }).catch(e=>onFailure({status : false, message : `something went wrong \n${e}`}) )
+        
+      } catch (error) {
+        onFailure({status : false, message : "something went wrong"})       
+
+        
+      }
+    //   const docRef = "miso/ref/data/" + name
+    //   await deleteFileAndReference(docRef).then(()=>{
+    //     onSuccess(name)
+    //   }).catch(e=>onFailure({status : false, message : `something went wrong \n${e}`}) )
         return {} as CommitResult
     }
     // async download (path: string) : Promise<CommitResult>{
@@ -325,27 +326,27 @@ export class MisoFileDataSource implements MisoFiles{
 
 // ... (Firebase initialization)
 
-async function deleteFileAndReference(documentId : string) {
-  const firestore = firebase.firestore();
-  const storage = new Storage();
+// async function deleteFileAndReference(documentId : string) {
+//   const firestore = firebase.firestore();
+//   const storage = new Storage();
 
-  try {
-    await firestore.runTransaction(async (transaction) => {
-      const documentRef = firestore.doc(`${documentId}`);
-      const docSnapshot = await transaction.get(documentRef);
+//   try {
+//     await firestore.runTransaction(async (transaction) => {
+//       const documentRef = firestore.doc(`${documentId}`);
+//       const docSnapshot = await transaction.get(documentRef);
 
-      if ( docSnapshot.exists) {
-        const storedFile = docSnapshot.data() as MisoFile; 
-        const fileUrl = storedFile.path
-        const bucket = storage.bucket();
-        const file = bucket.file(fileUrl.split('/').pop());
-        await file.delete();
+//       if ( docSnapshot.exists) {
+//         const storedFile = docSnapshot.data() as MisoFile; 
+//         const fileUrl = storedFile.path
+//         const bucket = storage.bucket();
+//         const file = bucket.file(fileUrl.split('/').pop());
+//         await file.delete();
 
-        transaction.delete(documentRef);
-      }
-    });
-  } catch (error) {
-    console.error('Error deleting file and reference:', error);
-    // Implement retry logic or other error handling strategies
-  }
-}
+//         transaction.delete(documentRef);
+//       }
+//     });
+//   } catch (error) {
+//     console.error('Error deleting file and reference:', error);
+//     // Implement retry logic or other error handling strategies
+//   }
+// }
